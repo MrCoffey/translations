@@ -6,13 +6,13 @@ El calendario que vamos a crear se parece a este.
 
 El primer día es en realidad el 26 del mes anterior y el último día del calendario es el sexto día del mes siguiente. La primera tarea va a ser encontrar el primer día. Recuerda que el primer día será el domingo 26 del mes anterior.
 
-Vamos a comenzar con la fecha de hoy, así tendremos un punto de referencia, ya que queremos el calendario de este mes, en lugar de adivinar lo que va a devolver, o si incluso si escribí las cosas bien, me gusta entrar en el IRB y jugar un juego que yo llamo "preguntale a Ruby". Sabemos que queremos ```date.today.begining_of_month```.
+Vamos a comenzar con la fecha de hoy, así tendremos un punto de referencia, ya que queremos el calendario de este mes, en lugar de adivinar lo que va a devolver, o si incluso si escribí las cosas bien, me gusta entrar en el IRB y jugar un juego que yo llamo "preguntale a Ruby". Sabemos que queremos ```Date.today.begining_of_month```.
 
 ~~~ruby
 $ first_calendar_day = Date.today.begining_of_month
 ~~~
 
-Vaya parece que ```date.today``` no existe en Ruby, pero estoy seguro de que he usado ```date.today```, quizás porque fue en Rails. Si fue en Rails probablemente pudo ser con **active support**. **Active support** es una biblioteca en el núcleo de Rails que esencialmente ajusta un montón de objetos básicos de Ruby para darles funcionalidad extendida. Los ajustes se hacen a través de la biblioteca **core extension**, en este caso ```date``` fue ajustada. Si requiero la extensión ```active support``` entonces podré llamar ```date.today```.
+Vaya parece que ```Date.today``` no existe en Ruby, pero estoy seguro de que he usado ```Date.today```, quizás porque fue en Rails. Si fue en Rails probablemente pudo ser con **active support**. **Active support** es una biblioteca en el núcleo de Rails que esencialmente ajusta un montón de objetos básicos de Ruby para darles funcionalidad extendida. Los ajustes se hacen a través de la biblioteca **core extension**, en este caso ```Date``` fue ajustada. Si requiero la extensión ```ActiveSupport``` entonces podré llamar ```Date.today```.
 
 ![Calendario](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/003/images/002.png "calendario")
 
@@ -22,7 +22,7 @@ $ Date.today
 => Sun, 03 May 2015
 ~~~
 
-```Date.today``` devuelve una fecha, un objeto de la clase ```date```. Si pregunto "cuál es tu clase?” dirá que es una fecha. Ya que ```date.today``` devuelve una fecha podemos entonces llamar otro método, esta será ```beginning_of_month``` que devuelve otra fecha. Y nos devuelve **Viernes 01 de mayo de 2015**. Es correcto, ese es el primer día de este mes. Pero esa no es la primera fecha del calendario.
+```Date.today``` devuelve una fecha, un objeto de la clase ```Date```. Si pregunto "cuál es tu clase?” dirá que es una fecha. Ya que ```Date.today``` devuelve una fecha podemos entonces llamar otro método, esta será ```beginning_of_month``` que devuelve otra fecha. Y nos devuelve **Viernes 01 de mayo de 2015**. Es correcto, ese es el primer día de este mes. Pero esa no es la primera fecha del calendario.
 
 ~~~ruby
 $ Date.today.class
@@ -43,11 +43,11 @@ $ Date.today.beginning_of_month.beginning_of_week(:sunday)
 $ first_calendar_day = Date.today.beginning_of_month.beginning_of_week(:sunday)
 ~~~
 
-Ahora tenemos nuestro primer día calendario establecido en ```date.today.beginning_of_month.beginning_of_week```, osea el domingo. Es hora de encontrar el último día calendario. ```last_calendar_day``` va a ser igual a ```date.today``` y va a devolver un objeto de ```date``` por lo que podemos llamar ```end_of_month```. Whoops tal vez no podemos. Parece que ```days_in_month``` no esta definido para ```Time:Class```. Nosotros ajustamos la clase ```date```, pero no ajustamos la clase ```time```.
+Ahora tenemos nuestro primer día calendario establecido en ```Date.today.beginning_of_month.beginning_of_week```, osea el domingo. Es hora de encontrar el último día calendario. ```last_calendar_day``` va a ser igual a ```Date.today``` y va a devolver un objeto de ```Date``` por lo que podemos llamar ```end_of_month```. Whoops tal vez no podemos. Parece que ```days_in_month``` no esta definido para ```Time``` class. Nosotros ajustamos la clase ```Date```, pero no ajustamos la clase ```Time```.
 
 ![Calendario](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/003/images/003.png "calendario")
 
-De nuevo vamos requerir las extensiones básicas de ```active support```. Esta vez vamos a decir ajusta la clase ```time```. Ahora puedo llamar ```date.today.end_of_month``` ya que utiliza la clase ```time``` con el fin de calcular cuantos días hay realmente en este mes. Eso se llama acoplamiento. Significa que el objeto ```data``` está acoplado al objeto ```time```, ya que ```date``` debe pedir el tiempo con el fin de obtener el final del mes, el cual es un método que vive en ```date```.
+De nuevo vamos requerir las extensiones básicas de ```active support```. Esta vez vamos a decir ajusta la clase ```Time```. Ahora puedo llamar ```Date.today.end_of_month``` ya que utiliza la clase ```Time``` con el fin de calcular cuantos días hay realmente en este mes. Eso se llama acoplamiento. Significa que el objeto ```Data``` está acoplado al objeto ```Time```, ya que ```Date``` debe pedir el tiempo con el fin de obtener el final del mes, el cual es un método que vive en ```Date```.
 
 ~~~ruby
 $ require "active_support/core_ext/time"
@@ -85,7 +85,7 @@ $ (first_calendar_day..last_calendar_day).to_a
 => [Sun, 26 Apr 2105, Mon, 27 Apr 2015, Thu, 28 Apr 2015...]
 ~~~
 
-Podemos hacer que eso suceda llamando ```in_groups_of``` en este arreglo. Otro error. Esta vez está diciendo que el objeto ```array``` no tiene un método llamado ```in_groups_of```. Una vez más las personas que han escrito proyectos en Rails saben que ```in_groups_of``` de hecho existe en `array`, pero no hasta después de haber ajustado el objeto `array` con **active support**. Vamos a hacer eso.
+Podemos hacer que eso suceda llamando ```in_groups_of``` en este arreglo. Otro error. Esta vez está diciendo que el objeto ```array``` no tiene un método llamado ```in_groups_of```. Una vez más las personas que han escrito proyectos en Rails saben que ```in_groups_of``` de hecho existe en `array`, pero no hasta después de haber ajustado el objeto `array` con **ActiveSupport**. Vamos a hacer eso.
 
 ~~~ruby
 $ (first_calendar_day..last_calendar_day).to_a.count
@@ -111,7 +111,7 @@ Copiaré este código que sé que funciona fuera del IRB y lo voy a pegar en Vim
 weeks = (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
 ~~~
 
-Nuestro siguiente paso aquí es en realidad va a ser la creación de algunos objetos. En primer lugar, debemos recordar que tenemos que requerir un par de cosas para que esto funcione. Necesitamos nuestra libreria de extensiones para **active support**. Ahora que tenemos estos requisitos vamos a crear un objeto. Sera una clase, y vamos a llamarla ```weeks``` porque eso es lo que devuelve. Vamos a darle un inicializador y sólo va a tomar una fecha. Estableceremos esa fecha por si nadie pasa una a ```date.today```. El día por defecto va a ser hoy.
+Nuestro siguiente paso aquí es en realidad va a ser la creación de algunos objetos. En primer lugar, debemos recordar que tenemos que requerir un par de cosas para que esto funcione. Necesitamos nuestra libreria de extensiones para **active support**. Ahora que tenemos estos requisitos vamos a crear un objeto. Sera una clase, y vamos a llamarla ```weeks``` porque eso es lo que devuelve. Vamos a darle un inicializador y sólo va a tomar una fecha. Estableceremos esa fecha por si nadie pasa una a ```Date.today```. El día por defecto va a ser hoy.
 
 ~~~ruby
 require "active_support/core_ext/date"
