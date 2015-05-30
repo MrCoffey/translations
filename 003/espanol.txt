@@ -42,4 +42,4 @@ Volvamos a Vim de nuevo. Vamos a leer nuestro código. Tenemos un inicializador 
 
 Quiero hacer algo. Vamos a comenzar con "time.now.months_since(2). to_date" y nos van a decir que esa es la fecha de inicio. Si se creamos "CalendarWeeks.new" y pasamos en esa nueva fecha de inicio y luego lo convertimos en un array tendremos el calendario para julio. Si tuviéramos que cambiar por 5 meses en el futuro, ahora tenemos el calendario para octubre.
 
-Nuestro objeto funciona. No tuvimos tiempo para terminarlo en HTML con el fin de mostrarlo. En el próximo episodio vamos a usar esta biblioteca que hemos creado en una aplicación Rails para imprimir un calendario. Ahora como con el procesador que vamos a construir.
+Nuestro objeto funciona. No tuvimos tiempo para terminarlo en HTML con el fin de mostrarlo. En el próximo episodio vamos a usar esta biblioteca que hemos creado en una aplicación Rails para imprimir un calendario. Ahora como con el procesador que vamos a construir. 
