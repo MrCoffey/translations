@@ -46,4 +46,4 @@ Por último, tenemos que visualizar este evento en nuestro calendario debajo de 
 
 Ahora, vamos a tener que crear ese "scope" dentro de nuestro modelo. Para que cuando actualice la página se pueda ver el evento que tenemos en nuestro en el calendario para el 20, que fue el que elegimos.
 
-Asi que eso fue todo por esta semana en RubyCasts. A pedido de ustedes la semana que viene vamos comenzar con contenido un poco más para principiates, para aquellos de ustedes que están recién graduados de Dev Bootcamps y no han pasado demasiado tiempo en Rubyland. Nos vemos el próximo martes.
+Asi que eso fue todo por esta semana en Rubycasts. A pedido de ustedes la semana que viene vamos comenzar con contenido un poco más para principiates, para aquellos de ustedes que están recién graduados de Dev Bootcamps y no han pasado demasiado tiempo en Rubyland. Nos vemos el próximo martes.
