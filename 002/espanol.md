@@ -10,7 +10,7 @@ Así que, esencialmente cada vez que como usuario de github haces un push a un r
 Veremos que enviar un pull request vale cinco puntos. Este objeto se implementa como un módulo que "auto extiende", asi que no crean nunca instancias de un evento de pull request. Es sólo un tipo, es un objeto de valor, similar al número cuarenta y dos. "Auto extender" en este contexto es lo mismo que poner 
 `self.score` esto nos permite llamar a este objeto, así ...
 
-~~ruby
+~~~ruby
 require 'fantasyhub/events'
 
 module Fantasyhub::Events::PullRequestEvent
@@ -21,11 +21,11 @@ module Fantasyhub::Events::PullRequestEvent
   end
 
 end
-~~
+~~~
 
 Y el método es `score`, entonces pasandole el método `score` al evento `pull request` podemos ver que aquí no se creó una nueva instancia del evento `pull request` para anotar la puntuación. Cabe aclarar que esto se podría haber hecho de otras maneras, pero escogí hacerlo con `extend self`. Este modúlo tiene un único método llamado "score". En el caso de este evento en particular la puntuación es cinco. Al revisar por ejemplo, `create_event`.
 
-~~ruby
+~~~ruby
 # fantasyhub/lib/fantasyhub/events/create_event.rb
 def score
     3
@@ -35,11 +35,11 @@ end
 def score
     7
 end    
-~~
+~~~
 
 La puntuación es de tres, para un evento "push" la puntuación es de siete, y así sucesivamente para cada uno de estos eventos. De esta forma mapeamos un evento "json" para cada "score". Todos los objetos ubicados en `fantasyhub/lib/fantasyhub/event.rb` tienen un trabajo. Un evento es la representación de otro evento `json`. Sólo que tiene un lector añadido para exponer algunos atributos. Esos atributos se implementan como variables de instancia dentro de una clase. Las claves se pasan como un hash, y luego nos traen cada una de las llaves fuera del hash con el fin de crear una instancia del objeto.
 
-~~ruby
+~~~ruby
 class Fantasyhub::Event
 
   attr_reader :actor, :event_type, :repo_url, :score, :created_at
@@ -53,7 +53,7 @@ class Fantasyhub::Event
   end
 end
 
-~~
+~~~
 
 Podría haber usado una estructura-abierta, pero me gustan mantener las cosas simples, por lo que optó por utilizar una clase. La razón por la que estoy usando fetch en el hash, es porque si una de estas llaven no existe no habrá un error si no que me avisara cual es la llave que falta, en lugar de recibir un raro `no-value`. Dentro de mi carpeta feed `fantasyhub/lib/fantasyhub/feed/
 ` ya que estoy tratando con una fuente de eventos en formato "json" de github, tengo dentro tres objetos. Uno de ellos será sólo para descargar esos eventos. El siguiente es para analizarlo dentro de algo que pueda entender en mi aplicación, y luego, la tercera parte sería entonces puntuar el evento.
@@ -62,14 +62,14 @@ Podría haber usado una estructura-abierta, pero me gustan mantener las cosas si
 
 Así que también tenemos un objeto `feed`, que es simplemente un espacio de nombres que representan una fuente, y es por eso que tenemos esta carpeta aquí llama "feed". Lo mismo para los eventos. `Events` es otro name space, adicionalmente queremos cargar todos los archivos dentro de "event" que terminan en la ruta `fija _event.rb`. Ya que si github fuera añadir un nuevo evento el dia de mañana, yo podría simplemente crear una nueva definición, dar una puntuación, y simplemente funcionaría.
 
-~~ruby
+~~~ruby
 #fantasyhub/lib/fantasyhub/events.rb
 require 'fantasyhub'
 
 module Fantasyhub::Events;end
 
 Gem.find_files("fantasyhub/events/*_event.rb").each { |path| require path }
-~~
+~~~
 
 ## Hallando el problema
 
@@ -83,18 +83,18 @@ Luego al ejecutar mis pruebas unitarias, puedo ver una pausa donde el nuevo case
 
 Asi que, veamos esto de nuevamente. Veamos donde está fallando. Está fallando en downloader, ya que el trabajo del descargador es salir a github y conseguirlo. Así que downloader es otro módulo que se auto extiende. Tiene un solo método público llamado "download". Le pasas un UID y este simplemente devuelve un feed en formato "json" de ese ID. Por lo tanto, la URL del feed en el método privado está mal, está señalando el valor antiguo. Podemos arreglarlo ...
 
-~~ruby
+~~~ruby
 # fantasyhub/lib/fantasyhub/feed/downloader.rb
 def download(uid)
   feed_for(uid)
 end
-~~
+~~~
 
 Vamos a tener que poner `users` aquí, el UID y luego lo configuramos en la ruta fija con `events`. Así que ahora tenemos `api.github.com/users/#{uid}/events`. Que funcionará. Así que, si quito los cassettes que fueron registrados con el error 410, y luego los vuelvo a ejecutar mi set de pruebas unitarias, podemos ver que una de esas pruebas que estaba fallando antes, pasó. Ya no arroja el error 410.
 
 Sin embargo, el valor de los commits ha cambiado, por lo que el score ha cambiado desde que se registró el último casete. Así que, ahora tengo que ir a `test/fantasyhub_test`, cambiar el score para que coincida con lo que el resultado se aparece hoy. El resultado que se ve actualmente es 137.
 
-~~ruby
+~~~ruby
 require 'minitest_helper'
 
 describe Fantasyhub do
@@ -107,7 +107,7 @@ describe Fantasyhub do
     end
   end
 end
-~~
+~~~
 
 Por lo tanto, vamos a cambiar esto por 137, y ahora puedo volver a ejecutar mis pruebas, tengo veintiocho de veintiocho pruebas unitarias que pasan de nuevo, que es donde empezamos. Pero, esta vez en realidad son correctas y si las corro con el flag `SLOW=1 ./bin/run_test_suite` para ejecutar mis pruebas de integración de extremo a extremo, podemos ver que ahora las prueba de integración estan correjidas, así como las pruebas unitarias.
 
@@ -117,7 +117,7 @@ Ahora quiero hablar un poco acerca de las pruebas rápidas y pruebas lentas. Es 
 
 Por lo tanto, cuando estas en el ciclo de TDD es beneficioso tener todas las pruebas que serán pruebas de sistemas, pruebas de integración, como quieras llamarlo, pruebas que prueban más de una cosa y ponen a prueba más de un sistema. En esencia lo que yo llamo pruebas lentas, necesitas una manera de segregar estas. Por lo tanto, te habrás dado cuenta de que yo no corro mis pruebas con `rake`, yo las corro un script de pruebas que escribí. Así que voy a abrirlo ...
 
-~~ruby
+~~~ruby
 #!/usr/bin/env ruby
 exit(1) if __FILE__ != $0
 
@@ -142,7 +142,7 @@ exit(0) unless ENV.keys.include?("SLOW")
 
 slow_tests = `find ./test -name *_test.rb -print | xargs grep -L "minitest_helper"`
 Dir.glob(slow_tests.split("\n")) { |f| puts f; require f }
-~~
+~~~
 
 Esto es un archivo de Ruby muy simple, mi script de pruebas. Vamos a buscar una llave de ambiente llamada `slow`. Si existe, vamos a buscar `CODECLIMATE_REPO_TOKEN`. Si existe vamos a decirle a `WebMock` que permita la llamada a `codeclimate` y vamos a hacer que los reportes de prueba comienzen por allí. Lo siguiente es que tenemos que cargar "lib" y los directorios de "test" en nuestro path de Ruby para poder requerir algo así como `fantasyhub` en lugar de `lib fantasyhub`.
 
@@ -161,7 +161,7 @@ Este usuario fantasyhubber es simplemente un usuario que ha hacho varias accione
 
 Ahora voy a dividir la pantalla y voy cargar una prueba rápida. Por lo tanto, una prueba rápida ... Lo único que carga en la parte superior es `minitest_helper`. `minitest_helper` hace todo el resto de trabajo. Así es como sé que es una prueba rápida. `minitest_helper` va a cargar VCR, hasta WebMock. Aquí es donde yo llamo el casete que quiero usar. Allí es donde pruebo contra el casete.
 
-~~ruby
+~~~ruby
 require "thincloud/test"
 require 'fantasyhub'
 
@@ -174,7 +174,7 @@ describe "End to end live test against github" do
     end
   end
 end
-~~
+~~~
 
 ## Conclusiones y sugerencias.
 
