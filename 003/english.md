@@ -4,10 +4,6 @@ In today's episode we're going to be building a calendar like you see here.
 
 But we're going to be doing it in a functional style where we don't mutate objects. We're going to start by having very procedural basic Ruby code and then we're going to wrap that in objects and essentially refactor it into structured Ruby code. But again, we’ll be doing this all without modifying any objects. 
 
-The calendar that we’re going to create looks like this calendar.
-
-![Calendar Screenshot](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/images/rubycasts_calendar/screenshot.png)
-
 The first calendar day is actually the 26 of the previous month and the last calendar day is the 6th of the next month. Let's write some code. The first task is going to be to find the first calendar day. If you remember the first calendar day is going to be the 26 of the Sunday of the previous month. 
 
 We're going to start with a `Date.today`, so we have a reference point, because we want this month's calendar, so today's months calendar `beginning_of_month` and rather than guessing what that is going to return, or if I even spelled it right, I like to jump right into IRB and play a game I call ask Ruby. We know we want date.today. 
@@ -118,15 +114,15 @@ require "active_support/core_ext/time"
 require "active_support/core_ext/array"
 
 class CalendarWeeks
-    def initialize(date=Date.today)
-        @date = date
-    end
+  def initialize(date=Date.today)
+    @date = date
+  end
 
-    def weeks
-        first_calendar_day = Date.today.beginning_of_month.beginning_of_week(:sunday)
-        last_calendar_day = Date.today.end_of_month.end_of_week(:sunday)
-        weeks = (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
-    end
+  def weeks
+    first_calendar_day = Date.today.beginning_of_month.beginning_of_week(:sunday)
+    last_calendar_day = Date.today.end_of_month.end_of_week(:sunday)
+    weeks = (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
+  end
 end
 ~~~
 
@@ -149,23 +145,23 @@ require "active_support/core_ext/time"
 require "active_support/core_ext/array"
 
 class CalendarWeeks
-    def initialize(date=Date.today)
-        @date = date
-    end
+  def initialize(date=Date.today)
+    @date = date
+  end
 
-    def weeks
-        weeks = (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
-    end
-    
-private
+  def weeks
+    (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
+  end
 
-    def first_calendar_day
-        @date.beginning_of_month.beginning_of_week(:sunday)
-    end
-    
-    def last_calendar_day
-        @date.end_of_month.end_of_week(:sunday)
-    end
+  private
+
+  def first_calendar_day
+    @date.beginning_of_month.beginning_of_week(:sunday)
+  end
+
+  def last_calendar_day
+    @date.end_of_month.end_of_week(:sunday)
+  end
 end
 ~~~
 
