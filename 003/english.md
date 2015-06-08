@@ -20,7 +20,7 @@ Oops it looks like `Date.today` doesn't exist in Ruby, but I'm pretty sure I've 
 
 Now because the `beginning_of_month` method just returns another date we can call another method on it. This time we’re going to do `beginning_of_week`. If we call `beginning_of_week` it gives us Monday the 27th of April. That's a little closer. It's in the month April. But we don't want to start from Monday. We want to start from Sunday. We can pass that into the method beginning_of_week and now we have first calendar day right here. Let's copy this out of the IRB console and let’s paste it into Vim. 
 
-~~~ruby
+```ruby
 $ Date.today.beginning_of_month
 => Fri, 01 May 2015 
 $ Date.today.beginning_of_month.beginning_of_week
@@ -28,7 +28,7 @@ $ Date.today.beginning_of_month.beginning_of_week
 $ Date.today.beginning_of_month.beginning_of_week(:sunday)
 => Sun, 26 Apr 2015
 $ first_calendar_day = Date.today.beginning_of_month.beginning_of_week(:sunday)
-~~~
+```
 
 Now we have our first calendar day which is set to `date.today.beginning_of_month.beginning_of_week, on the Sunday. Time to find the last calendar day. `last_calendar_day` is going to be equal to again date.today and that's going to return us a date object and so we can call `end_of_month`. Maybe we can't. This method says that undefined method `days_in_month` for Time:Class. Now we patch the date class, but we didn't patch the Time class. 
 
@@ -36,12 +36,12 @@ Now we have our first calendar day which is set to `date.today.beginning_of_mont
 
 Let's require active support core extensions again. This time we're going to say patch the Time class. I can now call `date.today.end_of_month` because it uses the time class in order to calculate how many days in this month there actually are. That's called coupling. That means that the data object is coupled to the time object, because the date has to ask the time in order to get the end of the month which is a method that lives on date. 
 
-~~~ruby
+```ruby
 $ require "active_support/core_ext/time"
 => true
 $ Date.today.end_of_month
 => Sun, 31 May 2015
-~~~
+```
 
 `Date.today.end_of_month` returns a date. We can verify that by asking it what its class is. It's of course a date. If the end of month gives us Sunday the 31st May, 2015, that's here, that's not really what we want. We want this date which is the 6th of June. Since that method returns a date we can just say give me the end of the week next which gives us Sunday the 31st May, 2015. 
 
@@ -53,49 +53,49 @@ We look and we’re like, 'Yeah, that’s not want we want either. We want the S
 
 We can represent that in Ruby by doing what's called a range. I can do `first_calendar_day..`, which is the range operator, `last_calendar_day`. This returns me an enumerator. If you remember I don't like guessing what Ruby is going to actually do. I would just rather ask it, so I'm going to paste that into here and I get first calendar day does not exist. So where did we get that? We got that here `first_calendar_day=`. Now we have first calendar day and the last calendar day. The first calendar day is indeed Sunday the 26th of April and the last calendar day is indeed Saturday the 6th of June. 
 
-~~~ruby
+```ruby
 (first_calendar_day..last_calendar_day)
-~~~
+```
 
 Now an interesting thing here is this is an enumerator. Technically it's a range which is an enumerator. An enumerator knows about the first number and it knows about the second number, so it knows about what the first day is and it knows about the last day, but it hasn't calculated the days in the middle. What that is is the concept of laziness. It’s saying I want to load the first day and the last day. We're going to do a range on that, but don't load all the ones in the middle just yet. Only now we're going to cast it to an array. As soon as we call to array on that range the calculation happens and now we have all of the days inside. Now we have essentially 42 days inside of our array. It’s not quite what we wanted though because what we want is an array of weeks that contain an array of days. Let's make that happen. 
 
 
-~~~ruby
+```ruby
 $ (first_calendar_day..last_calendar_day).class
 => Range
 $ (first_calendar_day..last_calendar_day).to_a
 => [Sun, 26 Apr 2105, Mon, 27 Apr 2015, Thu, 28 Apr 2015...]
-~~~
+```
 
 We can make that happen by calling in groups of on this array. Another error. This time it’s saying that the array object doesn't have a method called in groups of. Once again people who have written Rails projects know that in groups of indeed exist on array but not until after you've patched the array object with active support. Let's do that. 
 
-~~~ruby
+```ruby
 $ (first_calendar_day..last_calendar_day).to_a.count
 => 42
 $ (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
 => NoMethodError: undefined method `in_groups_of`for #<Array:0x0007a0s0s7c49>
 $ require "active_support/core_ext/array"
 $ true
-~~~
+```
 
 Now array has been patched with the active support core extensions by requiring that file. If we re-run that file we can see that we now indeed do have an array of 6 items and on the inside of each of those they contain 7 days. We now have our groups of six with our groups of 7 which is what we wanted. 
 
-~~~ruby
+```ruby
 $ (first_calendar_day..last_calendar_day).to_a.in_groups_of(7).count
 => 6
 $ (first_calendar_day..last_calendar_day).to_a.in_groups_of[0].count
 => 7
-~~~
+```
 
 I'm going to copy this code that I know works out of IRB and I'm going to paste it into Vim and I'm going to set it to weeks. Now I have essentially the core of what I need to accomplish the task at hand. But we have very imperative very procedural code here. There's no encapsulation. If we were just to run this file it really wouldn't do anything because we're just setting values, we’re not actually building out an object yet like the actual calendar, and I don't really want to put the rendering of the calendar along with the business part of the calendar. 
 
-~~~ruby
+```ruby
 weeks = (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
-~~~
+```
 
 Our next step here is actually going to be to create some objects. First, we need to remember that we have to require a couple of things in order for this to work. We need our active support library core extensions. Now that we've got those requirements in let's create an object. It's going to be a class. We're going to call it calendar weeks because that's what it returns. We’re going to give it an initializer and it's just going to take a date. We're going to set that date if no one passes one in to date.today. The default day is going to be today. 
 
-~~~ruby
+```ruby
 require "active_support/core_ext/date"
 require "active_support/core_ext/time"
 require "active_support/core_ext/array"
@@ -104,11 +104,11 @@ first_calendar_day = Date.today.beginning_of_month.beginning_of_week(:sunday)
 last_calendar_day = Date.today.end_of_month.end_of_week(:sunday)
 
 weeks = (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
-~~~
+```
 
 We now want to save that off into an instance variable so that we can access it later. Let's go ahead and create our weeks method here. When you call calendar weeks to a you would get an array of calendar weeks inside of that to make that happen. First thing is that we need to know about the calendar first day calendar last day and then we return the week. Let's just take that code and paste it right into here. Now we format this. 
 
-~~~ruby
+```ruby
 require "active_support/core_ext/date"
 require "active_support/core_ext/time"
 require "active_support/core_ext/array"
@@ -124,22 +124,22 @@ class CalendarWeeks
     weeks = (first_calendar_day..last_calendar_day).to_a.in_groups_of(7)
   end
 end
-~~~
+```
 
 If we were now to background Vim and run `irb-I` which is going to include something onto the Ruby load path. What we want to include on the load path is the current directory that calendar is in.That is represented in Unix by the dot command and we want to require the file calendar. Now we're inside of a Ruby interpreter and the calendar file has been loaded. It's like we had done this and you'll see you when I do this it's going to return false because it was already loaded in the other command. What this means is I can now do `calendarweeks.new.to_a` and there's my array of calendar weeks. 
 
-~~~ruby
+```ruby
 $ irb -I"." -rcalendar
 $ require "calendar"
 => false
 $ CalendarWeeks.new.to_a
-~~~
+```
 
 There's more that I can do to this code to make it nicer. I have a rule. If you have an instance variable in here it should probably be moved out into a private method of its own. I do that for many reasons. One of them is that it's actually a refactoring pattern called replace local variable with private method. The first calendar day is going to essentially just be this code, so we can just cut this out, paste it here and give it that. We don't need that. First calendar day is going to just return this. 
 
 The last calendar day can be done the same way where we're just going to bring the local variable down here and then we’re going to turn that into a method, we're going to return the value that the local variable was set to before, and now we have to replace this date today with the date that was passed in. We’re going to reload our IRB. We're going to call the method again and it works. We know that our refactoring worked. 
 
-~~~ruby
+```ruby
 require "active_support/core_ext/date"
 require "active_support/core_ext/time"
 require "active_support/core_ext/array"
@@ -163,13 +163,13 @@ class CalendarWeeks
     @date.end_of_month.end_of_week(:sunday)
   end
 end
-~~~
+```
 
 I’m going to foreground Vim again. Let’s read our code. We have an initializer that takes dates, but if you don't give it one it'll just set it to today, stores that date off into an instance variable, and it provides a method called to a which is going to return an array of weeks that contain an array of days. It does that by starting from the first calendar day and doing a range to the last calendar day and then converting that to an array calling it in groups of 7. 
 
 I want to do something now. We're going to start with `time.now.months_since(2).to_date` and we’re going to say that’s the starting date. If we then create a `CalendarWeeks.new` and we pass in that new starting date and then we call to array on our calendar we do indeed get the calendar for July. If we were to change that to you 5 months in the future we now have the calendar for October. 
 
-~~~ruby
+```ruby
 $ starting_date = Time.now.months_since(2).to_date
 => Fri, 03 Jul 2015
 $ CalendarWeeks.new(starting_date).to_a
@@ -177,6 +177,6 @@ $ CalendarWeeks.new(starting_date).to_a
 $ starting_date = Time.now.months_since(5).to_date
 => Sat, 03 Oct 2015
 $ CalendarWeeks.new(starting_date).to_a
-~~~
+```
 
 Our object works. We didn't have time to wrap this in HTML in order to display it. The next episode is going to be using this library that we created in a Rails app to print out a calendar. Now for a sneak-peek of next week's episode, this is what the calendar will look like when we render it out into HTML and CSS with the renderer that we're going to build.
