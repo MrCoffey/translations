@@ -6,7 +6,7 @@ We have the ability to add events and show them on the correct date. However, if
 
 ![Episode 006](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/006/images/002.png "calendar_sql_query")
 
-First, we'll start with the partial where this is occurring: `app/views/calendars/_day.html.erb`. This is rendered 42 times, meaning we have an `Active Record` scope that gets called each time. Instead, let's pass in some data. We are currently passing in this `day` variable which has two values: (1) the date the day partial should render and (2) the collection of CSS classes that are rendered with the partial. We'll be adding a third one, which is the events that we're going to render because they belong to a specific date.
+First, we'll start with the partial where this is occurring: `app/views/calendars/_day.html.erb`. This is rendered 42 times, meaning we have an `Active Record` scope that gets called each time. Instead, let's pass in some data. We are currently passing in this `day` variable which has two values: (1) the date the day partial should render and (2) the collection of CSS classes that are rendered with the partial. We'll be adding a third one, which are the events we're going to render because they belong to a specific date.
 
 ```ruby
     <div data-day="<%= day[0].strftime("%d") %>" 
@@ -75,6 +75,6 @@ In our `show` method, we're going to need to pass the events of the Active Recor
 
 Restart the rails server and refresh the page. This should now result in a single SQL query instead of the 42 we started out with. Going to the logs, we can see we have a lot of events and day partials being rendered, but there is only one call being made to the database.
 
-![Episode 006](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/006/images/003.png "calendario")
+![Episode 006](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/006/images/003.png "calendar_sql_query")
 
-That completes the Calendar application and this series. Next week, we'll start a new app and I hope to see you then! and date two which is represented by these two question marks. 
+That completes the Calendar application and this series. Next week, we'll start a new app and I hope to see you then!
