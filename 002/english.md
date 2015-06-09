@@ -170,7 +170,7 @@ describe "End to end live test against github" do
 end
 ~~~
 
-## Conclusions y suggestions.
+## Conclusions and suggestions.
 
 So, some conclusions and tips for this episode: Move slow tests out of you TDD loop, make sure you always have an end-to-end smoke test, use VCR to record conversations with remote APIs, build small focused objects that are easy to change, write plain old Ruby objects whenever possible, use continuous integration testing to catch problems.
 
