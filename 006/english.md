@@ -4,7 +4,7 @@ Removing N+ SQL Queries for Speed
 
 We have the ability to add events and show them on the correct date. However, if we look at the SQL query that is generated, we are actually querying the database 42 times (one for every date on the calendar). We want to limit the amount of times we touch the database to make our application more efficient. So how do we fix this?
 
-![Episode 006](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/006/images/002.png "calendario")
+![Episode 006](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/006/images/002.png "calendar_sql_query")
 
 First, we'll start with the partial where this is occurring: `app/views/calendars/_day.html.erb`. This is rendered 42 times, meaning we have an `Active Record` scope that gets called each time. Instead, let's pass in some data. We are currently passing in this `day` variable which has two values: (1) the date the day partial should render and (2) the collection of CSS classes that are rendered with the partial. We'll be adding a third one, which is the events that we're going to render because they belong to a specific date.
 
@@ -78,37 +78,3 @@ Restart the rails server and refresh the page. This should now result in a singl
 ![Episode 006](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/006/images/003.png "calendario")
 
 That completes the Calendar application and this series. Next week, we'll start a new app and I hope to see you then! and date two which is represented by these two question marks. 
-
-Since we pass two question marks to the SQL query we're going to need to give it two values. The first one is first calendar date, and the second one is last calendar date. If you've been following this series you may notice that we have first calendar date and last calendar date defined deep down in that calendar object. But I'm not going to pull those private local details out of the encapsulation that I had it in just so I can use it here in the controller. 
-
-It doesn't make sense to go from Rails which has `active support` into a Ruby class to get access to `active support` to come back to the Rails. We're just going to create it right here, and it looks like this. We’re going to start off with `date.today`. Then we're going to go to the `beginning_of_month` and the `beginning_of_the_week` starting with Sunday. I'm just going to copy this method because the next method looks a lot like this method with some minor differences. We're going to go to the `last_calendar_day` and we're going to do `end of month` and `end_of_week` starting at Sunday. 
-
-```ruby
-require 'calendar'
-
-class CalendarsController < ApplicationController
-    def show
-        @calendar = Calendar.new(events: events).to_a
-    end
-
-private
-
-    def calendar
-        @calenndar ||= Event.where("ocurrs_on BETWEEN ? AND ?", first_calendar_date, last_calendar_date)
-    end
-    
-    def first_calendar_date
-        Date.today.beginning_of_month.beginning_of_week(:sunday)
-    end
-    
-    def last_calendar_date
-        Date.today.beginning_of_month.end_of_week(:sunday)
-    end
-end
-```
-
-Our work here should be complete. We should be able to restart a Rail server, then refresh the page and have a single SQL query instead of 42. Our page has reloaded and we don't notice any change in functionality at, which is good. We go to the logs and we can see that we have a lot of events and a lot of day partials being rendered, but there is only one call to the database which is right here with this events load from events where occurs on between that date and the other date. 
-
-![Episode 006](https://s3-us-west-2.amazonaws.com/rubycastio-assets-production/asciicasts/006/images/003.png "calendario")
-
-That wraps it up for the calendar application and this series on Rubycasts. Next week we will start a new app. I hope to see you then. 
